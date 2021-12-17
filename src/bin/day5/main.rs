@@ -26,7 +26,7 @@ impl Line {
 impl Iterator for Line {
     type Item = (i32, i32);
     fn next(&mut self) -> Option<Self::Item> {
-        if (self.curr != (self.end.0 + self.dir.0, self.end.1 + self.dir.1)) {
+        if self.curr != (self.end.0 + self.dir.0, self.end.1 + self.dir.1) {
             let ret = Some(self.curr);
             self.curr.0 += self.dir.0;
             self.curr.1 += self.dir.1;
@@ -47,11 +47,12 @@ impl Diagram {
     fn add_line(&mut self, line: Line) {
         for (x,y) in line {
             match self.diagram_map.get(&(x,y)) {
-                Some(val) => self.diagram_map.insert((x,y), val+1),
+                Some(& val) => self.diagram_map.insert((x,y), val+1),
                 None => self.diagram_map.insert((x,y), 1),
             };
         }
     }
+
     fn get_n_obstacles(&self) -> usize {
         let mut diagram_map_copy = self.diagram_map.clone();
         diagram_map_copy.retain(|&k, v| v > &mut 1);

@@ -13,7 +13,7 @@ fn read_values_from_file() -> Vec::<i32> {
     out_vec
 }
 
-fn compute_cost_for_all_points(nums: &Vec::<i32>, cost_function: &dyn Fn(i32) -> u32) -> BTreeMap<u32, u32> {
+fn compute_cost_for_all_points(nums: &Vec::<i32>, cost_function: impl Fn(i32) -> u32) -> BTreeMap<u32, u32> {
     // First value is gonna be the cost and the second is the x coordinate
     let mut out_map = BTreeMap::new();
     let max_coordinate = *nums.iter().max().unwrap();
@@ -30,8 +30,8 @@ fn compute_cost_for_all_points(nums: &Vec::<i32>, cost_function: &dyn Fn(i32) ->
 fn main() {
     let nums = read_values_from_file();
 
-    let res1 = compute_cost_for_all_points(&nums, &|distance| distance as u32);
-    let res2 = compute_cost_for_all_points(&nums, &|distance| ((distance)*(distance + 1) / 2) as u32);
+    let res1 = compute_cost_for_all_points(&nums, |distance| distance as u32);
+    let res2 = compute_cost_for_all_points(&nums, |distance| ((distance)*(distance + 1) / 2) as u32);
 
     println!("{:?} {:?}", res1.iter().min(), res2.iter().min());
 }

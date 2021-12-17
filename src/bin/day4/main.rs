@@ -96,7 +96,7 @@ fn main() {
                     println!("First board has won with score {}", score);
                 }
                 winner_count += 1;
-                if winner_count == boards_len as u32 {
+                if winner_count == boards.len() as u32 {
                     println!("Last board has won with score {}", score);
                 }
             }

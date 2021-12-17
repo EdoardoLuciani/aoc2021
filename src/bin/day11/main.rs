@@ -44,7 +44,6 @@ impl<T: std::fmt::Debug> fmt::Debug for Matrix<T> {
         }
         fmt::Result::Ok(())
     }
-
 }
 
 impl Matrix<u8> {

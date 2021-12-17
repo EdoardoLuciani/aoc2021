@@ -35,7 +35,7 @@ fn get_gamma_and_epsilon(values: &Vec::<u32>) -> (u32, u32) {
     (gamma, epsilon)
 }
 
-fn get_val(mut values: Vec::<u32>, choosing_fun: &dyn Fn(u32, u32) -> bool) -> u32 {
+fn get_val(mut values: Vec::<u32>, choosing_fun: impl Fn(u32, u32) -> bool) -> u32 {
     for bit in (0..32).rev() {
         let (mut set_1, mut set_0): (u32, u32) = (0,0);
         for value in values.iter() {
@@ -76,7 +76,7 @@ fn get_val(mut values: Vec::<u32>, choosing_fun: &dyn Fn(u32, u32) -> bool) -> u
 fn get_oxygen_and_co2(values: &Vec::<u32>) -> (u32, u32) {
     let find_oxy = |set_1, set_0| set_1 == std::cmp::max(set_1, set_0) || set_1 == set_0;
     let find_co2 = |set_1, set_0| set_1 == std::cmp::min(set_1, set_0) && set_1 != set_0;
-    (get_val(values.clone(), &find_oxy), get_val(values.clone(), &find_co2))
+    (get_val(values.clone(), find_oxy), get_val(values.clone(), find_co2))
 }
 
 
