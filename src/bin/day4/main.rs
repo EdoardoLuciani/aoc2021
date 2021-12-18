@@ -6,19 +6,24 @@ struct Board {
     // Storing number as key and position as values
     pub board_num: HashMap<u32, (u32, u32)>,
     pub current_row_num: u32,
-    pub has_won : bool,
+    pub has_won: bool,
 }
 
 impl Board {
     fn new() -> Self {
-        Board{board_num: HashMap::new(), current_row_num: 0, has_won: false }
+        Board {
+            board_num: HashMap::new(),
+            current_row_num: 0,
+            has_won: false,
+        }
     }
-    fn fill_line(&mut self, values: &Vec::<u32>) {
+    fn fill_line(&mut self, values: &Vec<u32>) {
         if values.len() != 5 {
             panic!("Numbers must be 5");
         }
         for (i, value) in values.iter().enumerate() {
-            self.board_num.insert(*value, (self.current_row_num, i as u32));
+            self.board_num
+                .insert(*value, (self.current_row_num, i as u32));
         }
         self.current_row_num += 1;
     }
@@ -47,11 +52,11 @@ impl Board {
         for (val, _) in self.board_num.iter() {
             sum += val;
         }
-        return sum*num;
+        return sum * num;
     }
 }
 
-fn fill_boards() -> (Vec::<u32>, Vec::<Board>) {
+fn fill_boards() -> (Vec<u32>, Vec<Board>) {
     let file = File::open("input.txt").unwrap();
     let mut reader = BufReader::new(file);
 
@@ -84,7 +89,6 @@ fn fill_boards() -> (Vec::<u32>, Vec::<Board>) {
     (out_called_numbers, out_boards)
 }
 
-
 fn main() {
     let (calls, mut boards) = fill_boards();
     let boards_len = boards.len();
@@ -102,5 +106,4 @@ fn main() {
             }
         }
     }
-
 }

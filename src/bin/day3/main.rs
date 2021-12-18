@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::{prelude::*, BufReader};
 
-fn read_and_convert() -> Vec::<u32> {
+fn read_and_convert() -> Vec<u32> {
     let mut values = Vec::<u32>::new();
     let file = File::open("input.txt").unwrap();
     let reader = BufReader::new(file);
@@ -11,23 +11,21 @@ fn read_and_convert() -> Vec::<u32> {
     values
 }
 
-fn get_gamma_and_epsilon(values: &Vec::<u32>) -> (u32, u32) {
-    let (mut gamma, mut epsilon): (u32, u32) = (0,0);
+fn get_gamma_and_epsilon(values: &Vec<u32>) -> (u32, u32) {
+    let (mut gamma, mut epsilon): (u32, u32) = (0, 0);
     for bit in (0..32).rev() {
-        let (mut set_1, mut set_0): (u32, u32) = (0,0);
+        let (mut set_1, mut set_0): (u32, u32) = (0, 0);
         for value in values.iter() {
             if value & (1 << bit) != 0 {
                 set_1 += 1
-            }
-            else {
+            } else {
                 set_0 += 1;
             }
         }
         if set_0 != values.len() as u32 {
             if set_1 == std::cmp::max(set_1, set_0) {
                 gamma += 1 << bit;
-            }
-            else {
+            } else {
                 epsilon += 1 << bit;
             }
         }
@@ -35,14 +33,13 @@ fn get_gamma_and_epsilon(values: &Vec::<u32>) -> (u32, u32) {
     (gamma, epsilon)
 }
 
-fn get_val(mut values: Vec::<u32>, choosing_fun: impl Fn(u32, u32) -> bool) -> u32 {
+fn get_val(mut values: Vec<u32>, choosing_fun: impl Fn(u32, u32) -> bool) -> u32 {
     for bit in (0..32).rev() {
-        let (mut set_1, mut set_0): (u32, u32) = (0,0);
+        let (mut set_1, mut set_0): (u32, u32) = (0, 0);
         for value in values.iter() {
             if value & (1 << bit) != 0 {
                 set_1 += 1
-            }
-            else {
+            } else {
                 set_0 += 1;
             }
         }
@@ -54,8 +51,7 @@ fn get_val(mut values: Vec::<u32>, choosing_fun: impl Fn(u32, u32) -> bool) -> u
                         new_oxy_values.push(*value);
                     }
                 }
-            }
-            else {
+            } else {
                 for value in values.iter() {
                     if value & (1 << bit) == 0 {
                         new_oxy_values.push(*value);
@@ -64,8 +60,7 @@ fn get_val(mut values: Vec::<u32>, choosing_fun: impl Fn(u32, u32) -> bool) -> u
             }
             if new_oxy_values.len() == 1 {
                 return new_oxy_values[0];
-            }
-            else {
+            } else {
                 values = new_oxy_values;
             }
         }
@@ -73,12 +68,14 @@ fn get_val(mut values: Vec::<u32>, choosing_fun: impl Fn(u32, u32) -> bool) -> u
     0
 }
 
-fn get_oxygen_and_co2(values: &Vec::<u32>) -> (u32, u32) {
+fn get_oxygen_and_co2(values: &Vec<u32>) -> (u32, u32) {
     let find_oxy = |set_1, set_0| set_1 == std::cmp::max(set_1, set_0) || set_1 == set_0;
     let find_co2 = |set_1, set_0| set_1 == std::cmp::min(set_1, set_0) && set_1 != set_0;
-    (get_val(values.clone(), find_oxy), get_val(values.clone(), find_co2))
+    (
+        get_val(values.clone(), find_oxy),
+        get_val(values.clone(), find_co2),
+    )
 }
-
 
 fn main() {
     let values = read_and_convert();
@@ -86,5 +83,5 @@ fn main() {
     let (oxy, co2) = get_oxygen_and_co2(&values);
 
     println!("Power consumption is {}", gamma * epsilon);
-    println!("Life rating is {}", oxy*co2);
+    println!("Life rating is {}", oxy * co2);
 }

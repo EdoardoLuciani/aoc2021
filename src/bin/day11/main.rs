@@ -12,7 +12,11 @@ struct Matrix<T> {
 
 impl<T> Matrix<T> {
     pub fn new(rows: usize, cols: usize) -> Self {
-        Matrix{mat_nums : Vec::<T>::new(), rows, cols}
+        Matrix {
+            mat_nums: Vec::<T>::new(),
+            rows,
+            cols,
+        }
     }
 
     pub fn append(&mut self, val: T) -> bool {
@@ -23,9 +27,11 @@ impl<T> Matrix<T> {
         false
     }
 
-    pub fn get(&mut self, row : i64, col : i64) -> Option<&mut T> {
+    pub fn get(&mut self, row: i64, col: i64) -> Option<&mut T> {
         if row < self.rows as i64 && row > -1 && col < self.cols as i64 && col > -1 {
-            return self.mat_nums.get_mut((row * self.cols as i64 + col) as usize);
+            return self
+                .mat_nums
+                .get_mut((row * self.cols as i64 + col) as usize);
         }
         None
     }
@@ -33,7 +39,7 @@ impl<T> Matrix<T> {
 
 impl<T: std::fmt::Debug> fmt::Debug for Matrix<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        if self.mat_nums.len() != self.rows*self.cols {
+        if self.mat_nums.len() != self.rows * self.cols {
             return fmt::Result::Err(Error);
         }
         for rn in 0..self.rows {
@@ -47,8 +53,8 @@ impl<T: std::fmt::Debug> fmt::Debug for Matrix<T> {
 }
 
 impl Matrix<u8> {
-    fn compute_steps(&mut self, steps : u32) -> usize {
-        let mut total_flashes : usize = 0;
+    fn compute_steps(&mut self, steps: u32) -> usize {
+        let mut total_flashes: usize = 0;
         for _ in 0..steps {
             self.mat_nums.iter_mut().for_each(|v| *v += 1);
             let mut flashed = HashSet::<(i64, i64)>::new();
@@ -62,13 +68,21 @@ impl Matrix<u8> {
         total_flashes
     }
 
-    fn check_and_flash(&mut self, row : i64, col : i64, flashed: &mut HashSet<(i64, i64)>) {
+    fn check_and_flash(&mut self, row: i64, col: i64, flashed: &mut HashSet<(i64, i64)>) {
         if let Some(val) = self.get(row, col) {
             if *val > 9 {
                 *val = 0;
                 flashed.insert((row, col));
-                let positions: [(i64, i64); 8] = [(row, col+1), (row, col-1), (row-1, col), (row+1, col),
-                    (row-1, col-1), (row+1, col-1), (row-1, col+1), (row+1, col+1)];
+                let positions: [(i64, i64); 8] = [
+                    (row, col + 1),
+                    (row, col - 1),
+                    (row - 1, col),
+                    (row + 1, col),
+                    (row - 1, col - 1),
+                    (row + 1, col - 1),
+                    (row - 1, col + 1),
+                    (row + 1, col + 1),
+                ];
                 for (row_pos, col_pos) in positions {
                     if !flashed.contains(&(row_pos, col_pos)) {
                         if let Some(v) = self.get(row_pos, col_pos) {
@@ -82,7 +96,7 @@ impl Matrix<u8> {
     }
 
     fn compute_steps_until_all_equal(&mut self) -> u64 {
-        let mut step : u64 = 0;
+        let mut step: u64 = 0;
         while self.mat_nums.iter().any(|v| *v != self.mat_nums[0]) {
             self.compute_steps(1);
             step += 1;

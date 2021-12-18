@@ -1,6 +1,6 @@
-use std::fs::File;
-use std::io::{BufReader, prelude::*};
 use std::collections::HashSet;
+use std::fs::File;
+use std::io::{prelude::*, BufReader};
 
 struct Matrix {
     mat_nums: Vec<u8>,
@@ -10,42 +10,66 @@ struct Matrix {
 
 impl Matrix {
     fn new(rows: u32, cols: u32) -> Self {
-        Matrix{mat_nums : Vec::new(), rows : rows as i32, cols : cols as i32}
+        Matrix {
+            mat_nums: Vec::new(),
+            rows: rows as i32,
+            cols: cols as i32,
+        }
     }
 
-    fn get_element(&self, row_n : i32, col_n : i32) -> Option::<u8> {
+    fn get_element(&self, row_n: i32, col_n: i32) -> Option<u8> {
         if row_n < self.rows && row_n > -1 && col_n < self.cols && col_n > -1 {
-            return Some(*(self.mat_nums.get((row_n*self.cols + col_n) as usize).unwrap()));
+            return Some(
+                *(self
+                    .mat_nums
+                    .get((row_n * self.cols + col_n) as usize)
+                    .unwrap()),
+            );
         }
         None
     }
 
-    fn is_low_point(&self, row_n : i32, col_n : i32) -> Option<u8> {
+    fn is_low_point(&self, row_n: i32, col_n: i32) -> Option<u8> {
         let num_center = self.get_element(row_n, col_n).unwrap();
-        let positions: [(i32, i32); 4] = [(row_n, col_n+1), (row_n, col_n-1), (row_n-1, col_n), (row_n+1, col_n)];
-        for (row,col) in positions {
-            if let Some(num) = self.get_element(row,col) {
+        let positions: [(i32, i32); 4] = [
+            (row_n, col_n + 1),
+            (row_n, col_n - 1),
+            (row_n - 1, col_n),
+            (row_n + 1, col_n),
+        ];
+        for (row, col) in positions {
+            if let Some(num) = self.get_element(row, col) {
                 if num_center >= num {
-                    return None
+                    return None;
                 }
             }
         }
         Some(num_center)
     }
 
-    fn get_basin_points(&self, row_n : i32, col_n : i32) -> HashSet<(i32, i32)> {
+    fn get_basin_points(&self, row_n: i32, col_n: i32) -> HashSet<(i32, i32)> {
         let mut points = HashSet::<(i32, i32)>::new();
         points.insert((row_n, col_n));
         self.get_basin_points_rec_step(row_n, col_n, &mut points);
         points
     }
 
-    fn get_basin_points_rec_step(&self, row_n : i32, col_n : i32, basin_points : &mut HashSet<(i32, i32)>) {
+    fn get_basin_points_rec_step(
+        &self,
+        row_n: i32,
+        col_n: i32,
+        basin_points: &mut HashSet<(i32, i32)>,
+    ) {
         let num_center = self.get_element(row_n, col_n).unwrap();
-        let positions: [(i32, i32); 4] = [(row_n, col_n+1), (row_n, col_n-1), (row_n-1, col_n), (row_n+1, col_n)];
-        for (row,col) in positions {
-            if let Some(num) = self.get_element(row,col) {
-                if num != 9 && num_center < num  {
+        let positions: [(i32, i32); 4] = [
+            (row_n, col_n + 1),
+            (row_n, col_n - 1),
+            (row_n - 1, col_n),
+            (row_n + 1, col_n),
+        ];
+        for (row, col) in positions {
+            if let Some(num) = self.get_element(row, col) {
+                if num != 9 && num_center < num {
                     basin_points.insert((row, col));
                     self.get_basin_points_rec_step(row, col, basin_points);
                 }
@@ -56,8 +80,7 @@ impl Matrix {
     fn add_row(&mut self, row: &Vec<u8>) {
         if row.len() != self.cols as usize {
             panic!("Row must fit into the matrix")
-        }
-        else {
+        } else {
             self.mat_nums.extend(row);
         }
     }
@@ -86,7 +109,7 @@ fn get_basin_sizes(mat: &Matrix) -> Vec<u32> {
     }
     basin_sizes.sort_unstable_by(|a, b| b.cmp(a));
     basin_sizes
-} 
+}
 
 fn read_input_from_file() -> Matrix {
     let file = File::open("input.txt").unwrap();
@@ -94,7 +117,10 @@ fn read_input_from_file() -> Matrix {
     let lines: Vec<String> = reader.lines().collect::<Result<_, _>>().unwrap();
     let mut matrix = Matrix::new(lines.len() as u32, lines.get(0).unwrap().len() as u32);
     for line in lines.iter() {
-        let nums: Vec<u8> = line.chars().map(|c| c.to_digit(10).unwrap() as u8).collect();
+        let nums: Vec<u8> = line
+            .chars()
+            .map(|c| c.to_digit(10).unwrap() as u8)
+            .collect();
         matrix.add_row(&nums);
     }
     matrix
@@ -104,5 +130,5 @@ fn main() {
     let matrix = read_input_from_file();
     println!("{}", get_low_points_sum(&matrix));
     let mut basin_sizes = get_basin_sizes(&matrix);
-    println!("{}", basin_sizes[0]*basin_sizes[1]*basin_sizes[2]);
+    println!("{}", basin_sizes[0] * basin_sizes[1] * basin_sizes[2]);
 }

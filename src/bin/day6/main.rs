@@ -1,6 +1,6 @@
-use std::fs::File;
-use std::io::{prelude::*};
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::prelude::*;
 
 struct CountedSet {
     // age of fish, number of fish
@@ -9,14 +9,15 @@ struct CountedSet {
 
 impl CountedSet {
     fn new() -> Self {
-        CountedSet{set: HashMap::new()}
+        CountedSet {
+            set: HashMap::new(),
+        }
     }
 
     fn add(&mut self, key: u8, value: u64) {
         if let Some(val) = self.set.get_mut(&key) {
             *val += value;
-        }
-        else {
+        } else {
             self.set.insert(key, value);
         }
     }
@@ -25,7 +26,6 @@ impl CountedSet {
         self.set.values().sum()
     }
 }
-
 
 fn read_values_from_file() -> CountedSet {
     let mut file = File::open("input.txt").unwrap();
@@ -45,9 +45,8 @@ fn simulate(days: u32, mut current_set: CountedSet) -> CountedSet {
             if *countdown == 0 {
                 next_day_set.add(6, *amount);
                 next_day_set.add(8, *amount);
-            }
-            else {
-                next_day_set.add(countdown-1, *amount);
+            } else {
+                next_day_set.add(countdown - 1, *amount);
             }
         }
         current_set = next_day_set;
@@ -59,5 +58,4 @@ fn main() {
     let nums = read_values_from_file();
 
     println!("{}", simulate(256, nums).get_total_amount());
-
 }
